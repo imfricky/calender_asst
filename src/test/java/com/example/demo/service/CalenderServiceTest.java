@@ -41,19 +41,12 @@ public class CalenderServiceTest {
 
     @Test
     public void shouldGetAllTheCalendersFromGetAllCalenderTest() throws ParseException {
-        //CalenderRepository calenderRepository = mock(CalenderRepository.class);
-        Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 15:30:00");
-        Date date2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 16:00:00");
+
         List <Calender> calenderList = new ArrayList<>();
-        Calender c1 = new Calender(101L,10L, "24-04-2021",date1,date2);
-        Calender c2 = new Calender(102L,11L, "24-04-2021",date1,date2);
-        Calender c3 = new Calender(103L,12L, "24-04-2021",date1,date2);
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 18:30:00"));
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 19:30:00","2021-04-24 20:30:00"));
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 21:30:00","2021-04-24 22:30:00"));
 
-        calenderList.add(c1);
-        calenderList.add(c2);
-        calenderList.add(c3);
-
-        //CalenderServiceImpl calenderServiceImpl1 = new CalenderServiceImpl();
         when(calenderRepository.findAll()).thenReturn(calenderList);
         List<Calender> calenders = calenderService.getAllCalender();
         assertEquals(3,calenderService.getAllCalender().size());
@@ -61,112 +54,100 @@ public class CalenderServiceTest {
     }
 
     @Test
-    public void shouldGetEmployeeCalenderFromGetEmployeeCalenderTest() throws ParseException{
-        Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 15:30:00");
-        Date date2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 16:00:00");
+    public void shouldGetAllTheCalendersFromGetAllCalenderTestForEmptyCalender() throws ParseException{
+        when(calenderRepository.findAll()).thenReturn(null);
+        assertEquals(null,calenderService.getAllCalender());
+    }
+
+    @Test
+    public void shouldGetAllTheCalendersFromGetAllCalenderTestForMultipleInsertion() throws ParseException{
         List <Calender> calenderList = new ArrayList<>();
-        Calender c1 = new Calender(101L,10L, "24-04-2021",date1,date2);
-        Calender c2 = new Calender(102L,11L, "24-04-2021",date1,date2);
-        Calender c3 = new Calender(103L,12L, "24-04-2021",date1,date2);
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 18:30:00"));
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 19:30:00","2021-04-24 20:30:00"));
+        when(calenderRepository.findAll()).thenReturn(calenderList);
+        assertEquals(2,calenderService.getAllCalender().size());
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 21:30:00","2021-04-24 22:30:00"));
+        assertEquals(3,calenderService.getAllCalender().size());
 
-        calenderList.add(c1);
+    }
+    @Test
+    public void shouldGetAllTheCalendersFromGetAllCalenderTestForMultipleRemoval() throws ParseException{
+        List <Calender> calenderList = new ArrayList<>();
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 18:30:00"));
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 19:30:00","2021-04-24 20:30:00"));
+        Calender calenderObject = makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 21:30:00","2021-04-24 22:30:00");
+        calenderList.add(calenderObject);
+        when(calenderRepository.findAll()).thenReturn(calenderList);
+        assertEquals(3,calenderService.getAllCalender().size());
+        calenderList.remove(calenderObject);
+        assertEquals(2,calenderService.getAllCalender().size());
 
 
+    }
+
+    @Test
+    public void shouldGetAllTheCalendersFromGetAllCalenderTestForOneAdditionAndOneRemoval() throws ParseException{
+        List <Calender> calenderList = new ArrayList<>();
+        Calender calenderObject = makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 21:30:00","2021-04-24 22:30:00");
+        calenderList.add(calenderObject);
+        when(calenderRepository.findAll()).thenReturn(calenderList);
+        assertEquals(1,calenderService.getAllCalender().size());
+        calenderList.remove(calenderObject);
+        assertEquals(0,calenderService.getAllCalender().size());
+
+    }
+
+    @Test
+    public void shouldGetEmployeeCalenderFromGetEmployeeCalenderTest() throws ParseException{
+        List <Calender> calenderList = new ArrayList<>();
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 18:30:00"));
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 19:30:00","2021-04-24 20:30:00"));
         when(calenderRepository.getEmployeeCalender("24-04-2021",10L)).thenReturn(calenderList);
-
         List<Calender> calenderList1= calenderService.getEmployeeCalender("24-04-2021",10L);
-        assertEquals(1,calenderList1.size());
-
-
-
-
+        assertEquals(2,calenderList1.size());
     }
 
     @Test
     public void shouldGetNullFromGetEmployeeCalenderTestWithIDasNull() throws ParseException{
-        Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 15:30:00");
-        Date date2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 16:00:00");
         List <Calender> calenderList = new ArrayList<>();
-        Calender c1 = new Calender(101L,10L, "24-04-2021",date1,date2);
-        Calender c2 = new Calender(102L,11L, "24-04-2021",date1,date2);
-        Calender c3 = new Calender(103L,12L, "24-04-2021",date1,date2);
-
-        calenderList.add(c1);
-
-
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 18:30:00"));
         when(calenderRepository.getEmployeeCalender("24-04-2021",null)).thenReturn(null);
-
         List<Calender> calenderList2= calenderService.getEmployeeCalender("24-04-2021",null);
         assertEquals(null,calenderList2);
-
-
     }
 
     @Test
-    public void shouldGetNullFromGetEmployeeCalenderTestWithDateasNull() throws ParseException{
-        Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 15:30:00");
-        Date date2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 16:00:00");
+    public void shouldGetNullFromGetEmployeeCalenderTestWithDateAsNull() throws ParseException{
         List <Calender> calenderList = new ArrayList<>();
-        Calender c1 = new Calender(101L,10L, "24-04-2021",date1,date2);
-        Calender c2 = new Calender(102L,11L, "24-04-2021",date1,date2);
-        Calender c3 = new Calender(103L,12L, "24-04-2021",date1,date2);
-
-        calenderList.add(c1);
-
-
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 18:30:00"));
         when(calenderRepository.getEmployeeCalender(null,10L)).thenReturn(null);
-
         List<Calender> calenderList2= calenderService.getEmployeeCalender(null,10L);
         assertEquals(null,calenderList2);
-
-
     }
+
     @Test
-    public void shouldGetNullFromGetEmployeeCalenderTestWithIDandDateasNull() throws ParseException{
-        Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 15:30:00");
-        Date date2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 16:00:00");
+    public void shouldGetNullFromGetEmployeeCalenderTestWithIdAndDateAsNull() throws ParseException{
         List <Calender> calenderList = new ArrayList<>();
-        Calender c1 = new Calender(101L,10L, "24-04-2021",date1,date2);
-        Calender c2 = new Calender(102L,11L, "24-04-2021",date1,date2);
-        Calender c3 = new Calender(103L,12L, "24-04-2021",date1,date2);
-
-        calenderList.add(c1);
-
-
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 18:30:00"));
         when(calenderRepository.getEmployeeCalender(null,null)).thenReturn(null);
-
         List<Calender> calenderList2= calenderService.getEmployeeCalender(null,null);
         assertEquals(null,calenderList2);
-
-
     }
 
     @Test
-    public void shouldGetTwoEmployeeCalenderFromGetEmployeeCalenderTest() throws ParseException{
-        Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 15:30:00");
-        Date date2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 16:00:00");
+    public void shouldGetEmployeeCalenderFromGetEmployeeCalenderTestForMultipleEmployeeCalender() throws ParseException{
         List <Calender> calenderList = new ArrayList<>();
-        Calender c1 = new Calender(101L,10L, "24-04-2021",date1,date2);
-        Calender c2 = new Calender(102L,11L, "24-04-2021",date1,date2);
-        Calender c3 = new Calender(103L,12L, "24-04-2021",date1,date2);
-        Date date3 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 17:30:00");
-        Date date4 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 19:00:00");
-        Calender c4 = new Calender(104L,10L, "24-04-2021",date1,date2);
-
-        calenderList.add(c1);
-        calenderList.add(c4);
-
-
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 18:30:00"));
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 18:30:00","2021-04-24 19:30:00"));
+        calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 19:30:00","2021-04-24 20:30:00"));
         when(calenderRepository.getEmployeeCalender("24-04-2021",10L)).thenReturn(calenderList);
-
-        List<Calender> calenderList2= calenderService.getEmployeeCalender("24-04-2021",10L);
-        assertEquals(2,calenderList2.size());
+        assertEquals(3,calenderService.getEmployeeCalender("24-04-2021",10L).size());
 
 
     }
 
     @Test
-    public void shouldGetCorrectTimeSlotsForNullCalenders() {
+    public void shouldGetCorrectTimeSlotsForEmptyCalenders() {
         List<Calender> calendar1 = Collections.emptyList();
         List<Calender> calendar2 = Collections.emptyList();
         List<TimeSlots> expectedTimeSlots = Collections.emptyList();
@@ -175,22 +156,10 @@ public class CalenderServiceTest {
 
         assertEquals(expectedTimeSlots, result);
     }
-    @Test
-    public void shouldGetCorrectTimeSlotsForFirstNullCalender() throws ParseException {
-        List<Calender> calendar1 = new ArrayList<>();
-        List<Calender> calendar2 = new ArrayList<>();
-        List<TimeSlots> expectedTimeSlots = new ArrayList<>();
-        //Calender calenderObject1 = new Calender();
-        Calender calenderObject1 = makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 17:30:00");
-        calendar1.add(calenderObject1);
-        TimeSlots timeSlots = new TimeSlots(calenderObject1.getStartTime(),calenderObject1.getEndTime());
-        expectedTimeSlots.add(timeSlots);
-        List<TimeSlots> result = calenderService.getBusyTimeSlots(calendar1, calendar2);
-        assertEquals(expectedTimeSlots.size(), result.size());
-    }
+
 
     @Test
-    public void shouldGetCorrectTimeSlotsForNotNullCalender() throws ParseException {
+    public void shouldGetCorrectTimeSlotsForNonEmptyCalender() throws ParseException {
         List<Calender> calendar1 = new ArrayList<>();
         List<Calender> calendar2 = new ArrayList<>();
         List<TimeSlots> expectedTimeSlots = new ArrayList<>();
@@ -208,11 +177,23 @@ public class CalenderServiceTest {
     }
 
     @Test
-    public void shouldGetCorrectTimeSlotsForSecondNullCalender() throws ParseException {
+    public void shouldGetCorrectTimeSlotsForFirstEmptyCalender() throws ParseException {
         List<Calender> calendar1 = new ArrayList<>();
         List<Calender> calendar2 = new ArrayList<>();
         List<TimeSlots> expectedTimeSlots = new ArrayList<>();
-        //Calender calenderObject1 = new Calender();
+        Calender calenderObject1 = makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 17:30:00");
+        calendar1.add(calenderObject1);
+        TimeSlots timeSlots = new TimeSlots(calenderObject1.getStartTime(),calenderObject1.getEndTime());
+        expectedTimeSlots.add(timeSlots);
+        List<TimeSlots> result = calenderService.getBusyTimeSlots(calendar1, calendar2);
+        assertEquals(expectedTimeSlots.size(), result.size());
+    }
+
+    @Test
+    public void shouldGetCorrectTimeSlotsForSecondEmptyCalender() throws ParseException {
+        List<Calender> calendar1 = new ArrayList<>();
+        List<Calender> calendar2 = new ArrayList<>();
+        List<TimeSlots> expectedTimeSlots = new ArrayList<>();
         Calender calenderObject1 = makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 17:30:00");
         calendar2.add(calenderObject1);
 
@@ -221,6 +202,44 @@ public class CalenderServiceTest {
         List<TimeSlots> result = calenderService.getBusyTimeSlots(calendar1, calendar2);
         assertEquals(expectedTimeSlots.size(), result.size());
     }
+
+    @Test
+    public void shouldGetCorrectTimeSlotsForMultipleCalender() throws ParseException {
+        List<Calender> calendar1 = new ArrayList<>();
+        List<Calender> calendar2 = new ArrayList<>();
+        List<TimeSlots> expectedTimeSlots = new ArrayList<>();
+
+        Calender calenderObject1 = makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 15:30:00","2021-04-24 16:30:00");
+        Calender calenderObject2 = makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 15:30:00","2021-04-24 16:30:00");
+        Calender calenderObject3 = makeCalenderObject(101L,10L, "25-04-2021","2021-04-25 15:30:00","2021-04-25 16:30:00");
+        calendar1.add(calenderObject1);
+        calendar1.add(calenderObject2);
+        calendar1.add(calenderObject3);
+
+        Calender calenderObject4 = makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 17:30:00","2021-04-24 17:30:00");
+        Calender calenderObject5 = makeCalenderObject(101L,10L, "25-04-2021","2021-04-25 17:30:00","2021-04-25 17:30:00");
+        Calender calenderObject6 = makeCalenderObject(101L,10L, "25-04-2021","2021-04-25 17:30:00","2021-04-25 17:30:00");
+        calendar2.add(calenderObject4);
+        calendar2.add(calenderObject5);
+        calendar2.add(calenderObject6);
+
+        TimeSlots timeSlots1 = new TimeSlots(calenderObject1.getStartTime(),calenderObject1.getEndTime());
+        TimeSlots timeSlots2 = new TimeSlots(calenderObject2.getStartTime(),calenderObject2.getEndTime());
+        TimeSlots timeSlots3 = new TimeSlots(calenderObject3.getStartTime(),calenderObject3.getEndTime());
+        TimeSlots timeSlots4 = new TimeSlots(calenderObject4.getStartTime(),calenderObject4.getEndTime());
+        TimeSlots timeSlots5 = new TimeSlots(calenderObject5.getStartTime(),calenderObject5.getEndTime());
+        TimeSlots timeSlots6 = new TimeSlots(calenderObject6.getStartTime(),calenderObject6.getEndTime());
+        expectedTimeSlots.add(timeSlots1);
+        expectedTimeSlots.add(timeSlots2);
+        expectedTimeSlots.add(timeSlots3);
+        expectedTimeSlots.add(timeSlots4);
+        expectedTimeSlots.add(timeSlots5);
+        expectedTimeSlots.add(timeSlots6);
+
+        List<TimeSlots> result = calenderService.getBusyTimeSlots(calendar1, calendar2);
+        assertEquals(expectedTimeSlots.size(), result.size());
+    }
+
     @Test
     public void shouldGetUserWhoHasConflictInCalenderFromGetConflictCalenderForParticularData() throws ParseException {
         Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse("2021-04-24 15:30:00");

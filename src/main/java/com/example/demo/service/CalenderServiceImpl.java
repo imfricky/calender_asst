@@ -5,14 +5,10 @@ import com.example.demo.Repository.EmployeeRepository;
 import com.example.demo.model.Calender;
 import com.example.demo.model.Employee;
 import com.example.demo.model.TimeSlots;
-import org.hibernate.engine.internal.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.*;
-import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +33,6 @@ public class CalenderServiceImpl implements CalenderService{
     public List<TimeSlots> getBusyTimeSlots(List<Calender> c1, List<Calender> c2) {
         List<Calender> calender1 = c1;
         List<Calender> calender2 = c2;
-        List<Calender> busyslot = new ArrayList<>();
         List<TimeSlots> timeSlots = new ArrayList<>();
 
         for(int i=0;i<calender1.size();i++){
@@ -56,14 +51,16 @@ public class CalenderServiceImpl implements CalenderService{
                     .setEndTime(calender.getEndTime());
             timeSlots.add(timeSlots1);
         }
-
-
-        return timeSlots;
+        Set<TimeSlots> uniqueTimeSlots = new HashSet<>(timeSlots);
+        List<TimeSlots> listUniqueTimeSlots = new ArrayList<>(uniqueTimeSlots);
+        System.out.println(listUniqueTimeSlots.size());
+        //List<TimeSlots> listUniqueTimeSlots = timeSlots.stream().distinct().collect(Collectors.toList());
+        return listUniqueTimeSlots;
     }
 
     @Override
     public List<Employee> getConflictCalenderService(String date, Date startTime, Date endTime) {
-        List<Long> cid = new ArrayList<>();
+        List<Long> cid;
         cid = calenderRepository.getConflictCalender(date,startTime,endTime);
         List<Employee> employees = new ArrayList<>();
 
