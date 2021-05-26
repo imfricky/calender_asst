@@ -18,12 +18,12 @@ public class CalenderController {
     CalenderService calenderService;
 
     @GetMapping("/calenders")
-     List<Calender> getAll(){
+    List<Calender> getAll(){
         return calenderService.getAllCalender();
     }
 
     @GetMapping("/busy-slots")
-     List<TimeSlots> getBusySlots(@RequestParam String date,@RequestParam Long id1, @RequestParam Long id2)  {
+    List<TimeSlots> getBusySlots(@RequestParam String date, @RequestParam Long id1, @RequestParam Long id2)  {
         List<Calender> calender1 = calenderService.getEmployeeCalender(date,id1);
         List<Calender> calender2 = calenderService.getEmployeeCalender(date,id2);
 
