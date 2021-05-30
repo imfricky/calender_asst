@@ -24,9 +24,9 @@ public class Employee {
     }
 
     public Employee(Long id, String name, String email) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
+        this.setId(id);
+        this.setName(name);
+        this.setEmail(email);
     }
 
     public Long getId() {

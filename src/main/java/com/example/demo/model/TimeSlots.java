@@ -21,8 +21,8 @@ public class TimeSlots {
     }
 
     public TimeSlots(Date startTime, Date endTime) {
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.setStartTime(startTime);
+        this.setEndTime(endTime);
     }
 
     public Date getStartTime() {

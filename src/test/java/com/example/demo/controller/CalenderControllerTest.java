@@ -2,11 +2,14 @@ package com.example.demo.controller;
 
 import com.example.demo.Repository.CalenderRepository;
 import com.example.demo.model.Calender;
+import com.example.demo.model.Employee;
 import com.example.demo.model.TimeSlots;
 import com.example.demo.service.CalenderService;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.shadow.com.univocity.parsers.common.input.LineSeparatorDetector;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,12 +32,13 @@ import java.util.Date;
 import java.util.List;
 
 import static org.mockito.Mockito.*;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = CalenderController.class)
-//@WebMvcTest(CalenderController.class)
 public class CalenderControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -44,12 +48,36 @@ public class CalenderControllerTest {
     @MockBean
     CalenderRepository calenderRepository;
 
+    @InjectMocks
+    CalenderController calenderController;
+
     private Calender makeCalenderObject(Long mid, Long cid, String date, String startTime, String endTime) throws ParseException {
         Date date1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(startTime);
         Date date2 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(endTime);
         Calender calender = new Calender(mid,cid,date,date1,date2);
         return calender;
     }
+    Calender calenderObject1;
+    Calender calenderObject2;
+    List<Calender> calender1;
+    List<Calender> calender2;
+    List<TimeSlots> timeSlots;
+
+    @BeforeEach
+    public void setup() throws ParseException {
+
+        calenderObject1 = makeCalenderObject(101L, 10L, "24-04-2021", "2021-04-24 17:30:00", "2021-04-24 18:30:00");
+
+        calenderObject2 = makeCalenderObject(101L, 11L, "24-04-2021", "2021-04-24 19:30:00","2021-04-24 20:30:00");
+
+        calender1 = Arrays.asList(calenderObject1);
+
+        calender2 = Arrays.asList(calenderObject2);
+
+        timeSlots = Arrays.asList(new TimeSlots(calenderObject1.getStartTime(),calenderObject1.getEndTime()),new TimeSlots(calenderObject2.getStartTime(),calenderObject2.getEndTime()));
+
+    }
+
 
     @Test
     public void shouldReturnStatusOkFromRestUrlCalenders() throws Exception {
@@ -110,7 +138,6 @@ public class CalenderControllerTest {
         calenderList.add(calender1);
         calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 19:30:00","2021-04-24 20:30:00"));
         calenderList.add(makeCalenderObject(101L,10L, "24-04-2021","2021-04-24 21:30:00","2021-04-24 22:30:00"));
-
         when(calenderService.getAllCalender()).thenReturn(calenderList);
         RequestBuilder requestBuilder = MockMvcRequestBuilders.get(
                 "/calender-management/calenders").accept(
@@ -144,16 +171,17 @@ public class CalenderControllerTest {
     @Test
     public void shouldReturnStatusOkFromRestUrlBusySlots() throws Exception {
         Calender calenderObject1 = makeCalenderObject(101L, 10L, "24-04-2021", "2021-04-24 17:30:00", "2021-04-24 18:30:00");
-        Calender calenderObject2 = makeCalenderObject(101L, 10L, "24-04-2021", "2021-04-24 19:30:00","2021-04-24 20:30:00");
+        Calender calenderObject2 = makeCalenderObject(101L, 11L, "24-04-2021", "2021-04-24 19:30:00","2021-04-24 20:30:00");
         List<Calender> calender1 = Arrays.asList(calenderObject1);
         List<Calender> calender2 = Arrays.asList(calenderObject2);
         List<TimeSlots> timeSlots = Arrays.asList(new TimeSlots(calenderObject1.getStartTime(),calenderObject1.getEndTime()),new TimeSlots(calenderObject2.getStartTime(),calenderObject2.getEndTime()));
         when(calenderService.getBusyTimeSlots(calender1,calender2)).thenReturn(timeSlots);
-        String url = "/calender-management/busy-slots?date=2021-04-24&id1=3&id2=4";
+        String url = "/calender-management/busy-slots?date=2021-04-24&id1=10&id2=11";
         mockMvc.perform(get(url)).andExpect(status().isOk());
 
     }
 
+    //This is method doesn't return expected output that is timeslots,instead return blank string
     @Test
     public void shouldReturnBusySlotsFromRestUrlBusySlots() throws Exception {
         Calender calenderObject1 = makeCalenderObject(101L, 10L, "24-04-2021", "2021-04-24 17:30:00", "2021-04-24 18:30:00");
@@ -168,12 +196,15 @@ public class CalenderControllerTest {
                 "/calender-management/busy-slots?date=2021-04-24&id1=10&id2=11").accept(
                 MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(requestBuilder)
+                .andExpect(status().isOk())
                 .andReturn();
         System.out.println(result.getResponse());
+        //expected should be timeslots JSON not blank string
         String expected = "[]";
         JSONAssert.assertEquals(expected, result.getResponse()
                 .getContentAsString(), false);
 
     }
+
 
 }

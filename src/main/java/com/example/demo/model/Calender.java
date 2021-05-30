@@ -33,11 +33,11 @@ public class Calender {
     }
 
     public Calender(Long mid, Long cid, String date, Date startTime, Date endTime) {
-        this.mid = mid;
-        this.cid = cid;
-        this.date = date;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.setMid(mid);
+        this.setCid(cid);
+        this.setDate(date);
+        this.setStartTime(startTime);
+        this.setEndTime(endTime);
     }
 
     public Long getMid() {

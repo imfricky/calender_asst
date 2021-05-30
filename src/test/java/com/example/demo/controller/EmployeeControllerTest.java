@@ -1,19 +1,14 @@
 package com.example.demo.controller;
 
-import com.example.demo.Repository.CalenderRepository;
 import com.example.demo.Repository.EmployeeRepository;
-import com.example.demo.model.Calender;
 import com.example.demo.model.Employee;
-import com.example.demo.service.CalenderService;
 import com.example.demo.service.EmployeeService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -22,19 +17,18 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.*;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 
 @RunWith(SpringRunner.class)
 @WebMvcTest(value = EmployeeController.class)
@@ -199,7 +193,9 @@ public class EmployeeControllerTest {
 
     }
 
-   /* @Test
+
+    //These two functions gives JSON parsable Error.
+    @Test
     public void shouldReturnEmployeeForSaveEmployee() throws Exception {
         Employee employee1 = new Employee(10L,"Test1","Test1@abc");
         when(employeeService.saveEmployee(employee1)).thenReturn(employee1);
@@ -213,5 +209,23 @@ public class EmployeeControllerTest {
         String expected = "[]";
         JSONAssert.assertEquals(expected, result.getResponse()
                 .getContentAsString(), false);
-    }*/
+    }
+
+    @Test
+    public void shouldReturnEmployeeForSaveEmployee_1() throws Exception {
+        Employee employee1 = new Employee(10L,"Test1","Test1@abc");
+        doReturn(employee1).when(employeeService).saveEmployee(employee1);
+        MvcResult result = mockMvc.perform(post("/employee-management/employees")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(employee1))
+                .with(csrf()))
+                .andExpect(status().isOk())
+                .andReturn();
+        String expected = "{\"id\":10,\"name\":\"Test1\",\"email\":\"Test1@abc\",\"calender\":[]}";
+        System.out.println(result.getResponse().getContentAsString());
+        JSONAssert.assertEquals(expected, result.getResponse()
+                .getContentAsString(), false);
+    }
+
+
 }

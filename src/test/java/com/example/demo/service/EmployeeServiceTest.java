@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -16,6 +17,7 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 //@RunWith(SpringRunner.class)
@@ -32,6 +34,7 @@ public class EmployeeServiceTest {
         when(employeeRepository.findAll()).thenReturn(Stream
                 .of(new Employee(101L,"Test1","Test1@xyz"), new Employee(102L,"Test2","Test2@xyz")).collect(Collectors.toList()));
         assertEquals(2,employeeService.getAllEmployee().size());
+        verify(employeeRepository).findAll();
     }
 
     @Test
